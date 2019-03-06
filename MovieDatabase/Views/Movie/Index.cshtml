@@ -1,0 +1,47 @@
+﻿@model List<IndexMovieViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h3>List of movies</h3>
+
+<a class="btn btn-primary" href="@Url.Action("Register", "Movie")">Register new movie</a>
+
+@if (!Model.Any())
+{
+    <div style="margin-top:15px;">
+        <p><strong>You have no movies</strong></p>
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Movie name</th>
+                <th>Rating</th>
+                <th>Category</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in Model)
+            {
+                <tr>
+                    <td>@record.MovieName</td>
+                    <td>@record.Rating</td>
+                    <td>@record.Category</td>
+                    <td><a href="@Url.Action("Edit", "Movie", new { id = record.Id })">Edit</a></td>
+                    <td>
+                        <form id="frm-delete" method="post" action="@Url.Action("Delete", "Movie", new { id = record.Id })">
+                            <a href="#" onclick="javascript: document.getElementById('frm-delete').submit();">Delete</a>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
