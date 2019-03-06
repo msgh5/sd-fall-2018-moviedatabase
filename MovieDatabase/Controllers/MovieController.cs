@@ -1,4 +1,6 @@
-﻿using MovieDatabase.Models.Domain;
+﻿using Microsoft.AspNet.Identity;
+using MovieDatabase.Models;
+using MovieDatabase.Models.Domain;
 using MovieDatabase.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,12 +11,20 @@ namespace MovieDatabase.Controllers
 {
     public class MovieController : Controller
     {
-        private static Random Random = new Random();
-        private static List<Movie> MoviesDatabase = new List<Movie>();
+        private ApplicationDbContext DbContext;
+
+        public MovieController()
+        {
+            DbContext = new ApplicationDbContext();
+        }
 
         public ActionResult Index()
         {
-            var model = MoviesDatabase.Select(p => new IndexMovieViewModel
+            var userId = User.Identity.GetUserId();
+
+            var model = DbContext.Movies
+                .Where(p => p.UserId == userId)
+                .Select(p => new IndexMovieViewModel
             {
                 Id = p.Id,
                 Category = p.Category,
@@ -46,7 +56,9 @@ namespace MovieDatabase.Controllers
                 return View();
             }
 
-            if (MoviesDatabase.Any(p =>
+            var userId = User.Identity.GetUserId();
+
+            if (DbContext.Movies.Any(p => p.UserId == userId &&
             p.Name == formData.MovieName &&
             (!id.HasValue || p.Id != id.Value)))
             {
@@ -60,14 +72,14 @@ namespace MovieDatabase.Controllers
             Movie movie;
 
             if (!id.HasValue)
-            {
+            {   
                 movie = new Movie();
-                movie.Id = Random.Next(1, 1001);
-                MoviesDatabase.Add(movie);
+                movie.UserId = userId;
+                DbContext.Movies.Add(movie);
             }
             else
             {
-                movie = MoviesDatabase.FirstOrDefault(
+                movie = DbContext.Movies.FirstOrDefault(
                p => p.Id == id);
 
                 if (movie == null)
@@ -80,6 +92,8 @@ namespace MovieDatabase.Controllers
             movie.Rating = formData.Rating.Value;
             movie.Category = formData.Category;
 
+            DbContext.SaveChanges();
+
             return RedirectToAction(nameof(MovieController.Index));
         }
 
@@ -91,8 +105,10 @@ namespace MovieDatabase.Controllers
                 return RedirectToAction(nameof(MovieController.Index));
             }
 
-            var movie = MoviesDatabase.FirstOrDefault(
-                p => p.Id == id);
+            var userId = User.Identity.GetUserId();
+
+            var movie = DbContext.Movies.FirstOrDefault(
+                p => p.Id == id && p.UserId == userId);
 
             if (movie == null)
             {
@@ -123,11 +139,14 @@ namespace MovieDatabase.Controllers
                 return RedirectToAction(nameof(MovieController.Index));
             }
 
-            var movie = MoviesDatabase.FirstOrDefault(p => p.Id == id);
+            var userId = User.Identity.GetUserId();
+
+            var movie = DbContext.Movies.FirstOrDefault(p => p.Id == id && p.UserId == userId);
 
             if (movie != null)
             {
-                MoviesDatabase.Remove(movie);
+                DbContext.Movies.Remove(movie);
+                DbContext.SaveChanges();
             }
 
             return RedirectToAction(nameof(MovieController.Index));
