@@ -8,7 +8,7 @@ using System.Linq;
 using System.Web.Mvc;
 
 namespace MovieDatabase.Controllers
-{
+{   
     public class MovieController : Controller
     {
         private ApplicationDbContext DbContext;
@@ -132,6 +132,7 @@ namespace MovieDatabase.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (!id.HasValue)
