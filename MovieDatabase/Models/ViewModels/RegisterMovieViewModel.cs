@@ -21,5 +21,7 @@ namespace MovieDatabase.Models.ViewModels
         
         [AllowHtml]
         public string Description { get; set; }
+
+        public HttpPostedFileBase Media { get; set; }
     }
 }

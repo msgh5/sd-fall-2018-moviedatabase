@@ -10,6 +10,11 @@
 <p>@Model.Category</p>
 <p>@Html.Raw(Model.Description)</p>
 <p>@Model.Rating</p>
+<div class="row">
+    <div class="col-md-2">
+        <img class="img-responsive" src="@Url.Content(Model.MediaUrl)" />
+    </div>
+</div>
 
 
 

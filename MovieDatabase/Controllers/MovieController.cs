@@ -2,7 +2,9 @@
 using MovieDatabase.Models;
 using MovieDatabase.Models.Domain;
 using MovieDatabase.Models.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -68,6 +70,21 @@ namespace MovieDatabase.Controllers
                 return View();
             }
 
+            string fileExtension;
+
+            //Validating file upload
+            if (formData.Media != null)
+            {
+                fileExtension = Path.GetExtension(formData.Media.FileName);
+
+                if (!Constants.AllowedFileExtensions.Contains(fileExtension))
+                {
+                    ModelState.AddModelError("", "File extension is not allowed.");
+                    PopulateViewBag();
+                    return View();
+                }
+            }
+
             Movie movie;
 
             if (!id.HasValue)
@@ -78,8 +95,7 @@ namespace MovieDatabase.Controllers
             }
             else
             {
-                movie = DbContext.Movies.FirstOrDefault(
-               p => p.Id == id);
+                movie = DbContext.Movies.FirstOrDefault(p => p.Id == id && p.UserId == userId);
 
                 if (movie == null)
                 {
@@ -91,6 +107,22 @@ namespace MovieDatabase.Controllers
             movie.Rating = formData.Rating.Value;
             movie.Category = formData.Category;
             movie.Description = formData.Description;
+
+            //Handling file upload
+            if (formData.Media != null)
+            {
+                if (!Directory.Exists(Constants.UploadFolder))
+                {
+                    Directory.CreateDirectory(Constants.UploadFolder);
+                }
+
+                var fileName = formData.Media.FileName;
+                var fullPathWithName = Constants.UploadFolder + fileName;
+
+                formData.Media.SaveAs(fullPathWithName);
+
+                movie.MediaUrl = Constants.MappedUploadFolder + fileName;
+            }
 
             DbContext.SaveChanges();
 
@@ -162,7 +194,7 @@ namespace MovieDatabase.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var movie = DbContext.Movies.FirstOrDefault(p => 
+            var movie = DbContext.Movies.FirstOrDefault(p =>
             p.Id == id.Value &&
             p.UserId == userId);
 
@@ -174,6 +206,7 @@ namespace MovieDatabase.Controllers
             model.Description = movie.Description;
             model.MovieName = movie.Name;
             model.Rating = movie.Rating;
+            model.MediaUrl = movie.MediaUrl;
 
             return View(model);
         }
