@@ -2,13 +2,12 @@
 using MovieDatabase.Models;
 using MovieDatabase.Models.Domain;
 using MovieDatabase.Models.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
 namespace MovieDatabase.Controllers
-{   
+{
     public class MovieController : Controller
     {
         private ApplicationDbContext DbContext;
@@ -25,12 +24,12 @@ namespace MovieDatabase.Controllers
             var model = DbContext.Movies
                 .Where(p => p.UserId == userId)
                 .Select(p => new IndexMovieViewModel
-            {
-                Id = p.Id,
-                Category = p.Category,
-                MovieName = p.Name,
-                Rating = p.Rating
-            }).ToList();
+                {
+                    Id = p.Id,
+                    Category = p.Category,
+                    MovieName = p.Name,
+                    Rating = p.Rating
+                }).ToList();
 
             return View(model);
         }
@@ -72,7 +71,7 @@ namespace MovieDatabase.Controllers
             Movie movie;
 
             if (!id.HasValue)
-            {   
+            {
                 movie = new Movie();
                 movie.UserId = userId;
                 DbContext.Movies.Add(movie);
@@ -91,6 +90,7 @@ namespace MovieDatabase.Controllers
             movie.Name = formData.MovieName;
             movie.Rating = formData.Rating.Value;
             movie.Category = formData.Category;
+            movie.Description = formData.Description;
 
             DbContext.SaveChanges();
 
@@ -121,6 +121,7 @@ namespace MovieDatabase.Controllers
             model.Category = movie.Category;
             model.Rating = movie.Rating;
             model.MovieName = movie.Name;
+            model.Description = movie.Description;
 
             return View(model);
         }
@@ -151,6 +152,30 @@ namespace MovieDatabase.Controllers
             }
 
             return RedirectToAction(nameof(MovieController.Index));
+        }
+
+        [HttpGet]
+        public ActionResult Details(int? id)
+        {
+            if (!id.HasValue)
+                return RedirectToAction(nameof(MovieController.Index));
+
+            var userId = User.Identity.GetUserId();
+
+            var movie = DbContext.Movies.FirstOrDefault(p => 
+            p.Id == id.Value &&
+            p.UserId == userId);
+
+            if (movie == null)
+                return RedirectToAction(nameof(MovieController.Index));
+
+            var model = new DetailsMovieViewModel();
+            model.Category = movie.Category;
+            model.Description = movie.Description;
+            model.MovieName = movie.Name;
+            model.Rating = movie.Rating;
+
+            return View(model);
         }
 
         private void PopulateViewBag()

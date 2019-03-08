@@ -18,5 +18,8 @@ namespace MovieDatabase.Models.ViewModels
 
         [Required]
         public string Category { get; set; }
+        
+        [AllowHtml]
+        public string Description { get; set; }
     }
 }

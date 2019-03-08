@@ -6,6 +6,9 @@
 
 @section scripts{
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/tinymce/tinymce.min.js"></script>
+    <script src="~/Scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script src="~/Scripts/RegisterEditMovie.js"></script>
 }
 
 <h3>Create movie</h3>
@@ -15,8 +18,11 @@
 
     <div class="form-group">
         @Html.LabelFor(p => p.MovieName, "Movie name:")
-        @Html.TextBoxFor(p => p.MovieName,  new { @class = "form-control", placeholder = "Movie name" })
-    
+        @Html.TextBoxFor(p => p.MovieName, new { @class = "form-control", placeholder = "Movie name" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(p => p.Description, "Description:")
+        @Html.TextAreaFor(p => p.Description, new { @class = "form-control", placeholder = "Description", rows = 5, columns = 5 })
     </div>
     <div class="form-group">
         <label for="exampleInputEmail1">Rating:</label>
