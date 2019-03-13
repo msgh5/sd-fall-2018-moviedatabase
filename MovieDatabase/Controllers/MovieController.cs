@@ -212,7 +212,7 @@ namespace MovieDatabase.Controllers
         }
 
         [HttpGet]
-        [Route("mymovies/{name}")]
+        [Route("mymovies/{name}")] // Creates a custom route to this action
         public ActionResult DetailsByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

@@ -13,8 +13,10 @@ namespace MovieDatabase
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            //Enables MVC to create routes from attributes in the action
             routes.MapMvcAttributeRoutes();
 
+            //Another way of handling custom routes
             //routes.MapRoute(
             //    name: "MyMovieRoute",
             //    url: "mymovies/{name}",
