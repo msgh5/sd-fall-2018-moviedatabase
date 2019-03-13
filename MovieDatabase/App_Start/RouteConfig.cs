@@ -13,6 +13,14 @@ namespace MovieDatabase
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapMvcAttributeRoutes();
+
+            //routes.MapRoute(
+            //    name: "MyMovieRoute",
+            //    url: "mymovies/{name}",
+            //    defaults: new { controller = "Movie", action = "DetailsByName" }
+            //);
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

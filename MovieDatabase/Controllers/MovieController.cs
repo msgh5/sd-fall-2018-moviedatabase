@@ -211,6 +211,36 @@ namespace MovieDatabase.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Route("mymovies/{name}")]
+        public ActionResult DetailsByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return RedirectToAction(nameof(MovieController.Index));
+            }
+
+            var userId = User.Identity.GetUserId();
+
+            var movie = DbContext.Movies.FirstOrDefault(p =>
+            p.Name == name &&
+            p.UserId == userId);
+
+            if (movie == null)
+            {
+                return RedirectToAction(nameof(MovieController.Index));
+            }
+
+            var model = new DetailsMovieViewModel();
+            model.Category = movie.Category;
+            model.Description = movie.Description;
+            model.MovieName = movie.Name;
+            model.Rating = movie.Rating;
+            model.MediaUrl = movie.MediaUrl;
+
+            return View("Details", model);
+        }
+
         private void PopulateViewBag()
         {
             var categories = new SelectList(

@@ -42,6 +42,9 @@ else
                     <a href="@Url.Action("Details", "Movie", new { id = record.Id })">Details</a>
                 </td>
                 <td>
+                    <a href="@Url.Action("DetailsByName", "Movie", new { name = record.MovieName })">Details</a>
+                </td>
+                <td>
                     <a href="@Url.Action("Edit", "Movie", new { id = record.Id })">Edit</a>
                 </td>
                 @if (User.IsInRole("Admin"))
