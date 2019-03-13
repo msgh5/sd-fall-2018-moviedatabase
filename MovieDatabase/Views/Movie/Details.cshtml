@@ -12,7 +12,10 @@
 <p>@Model.Rating</p>
 <div class="row">
     <div class="col-md-2">
-        <img class="img-responsive" src="@Url.Content(Model.MediaUrl)" />
+        @if (!string.IsNullOrWhiteSpace(Model.MediaUrl))
+        {
+            <img class="img-responsive" src="@Url.Content(Model.MediaUrl)" />
+        }
     </div>
 </div>
 
