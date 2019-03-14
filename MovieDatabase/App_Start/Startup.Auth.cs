@@ -59,11 +59,11 @@ namespace MovieDatabase
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "805160754923-n0muftsbpruthuoh2fr896urjbqs92kh.apps.googleusercontent.com",
+                ClientSecret = "xrCXbwhQ_z86S3dmR-FekhNC"
+            });
         }
     }
 }
