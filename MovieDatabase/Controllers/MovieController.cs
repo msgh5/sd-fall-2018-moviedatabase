@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using MovieDatabase.Models;
 using MovieDatabase.Models.Domain;
+using MovieDatabase.Models.Helpers;
 using MovieDatabase.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,18 +14,19 @@ namespace MovieDatabase.Controllers
     public class MovieController : Controller
     {
         private ApplicationDbContext DbContext;
-
+        private MoviesHelper MoviesHelper;
+        
         public MovieController()
         {
             DbContext = new ApplicationDbContext();
+            MoviesHelper = new MoviesHelper(DbContext);
         }
 
         public ActionResult Index()
         {
             var userId = User.Identity.GetUserId();
 
-            var model = DbContext.Movies
-                .Where(p => p.UserId == userId)
+            var model = MoviesHelper.GetUsersMovies(userId)
                 .Select(p => new IndexMovieViewModel
                 {
                     Id = p.Id,
@@ -58,10 +60,10 @@ namespace MovieDatabase.Controllers
             }
 
             var userId = User.Identity.GetUserId();
-
-            if (DbContext.Movies.Any(p => p.UserId == userId &&
-            p.Name == formData.MovieName &&
-            (!id.HasValue || p.Id != id.Value)))
+            
+            if (MoviesHelper.CheckIfMovieAlreadyExists(id, 
+                formData.MovieName, 
+                userId))
             {
                 ModelState.AddModelError(nameof(RegisterEditMovieViewModel.MovieName),
                     "Movie name should be unique");
@@ -95,7 +97,7 @@ namespace MovieDatabase.Controllers
             }
             else
             {
-                movie = DbContext.Movies.FirstOrDefault(p => p.Id == id && p.UserId == userId);
+                movie = MoviesHelper.GetMovieById(id.Value, userId);
 
                 if (movie == null)
                 {
@@ -139,8 +141,7 @@ namespace MovieDatabase.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var movie = DbContext.Movies.FirstOrDefault(
-                p => p.Id == id && p.UserId == userId);
+            var movie = MoviesHelper.GetMovieById(id.Value, userId);
 
             if (movie == null)
             {
@@ -175,7 +176,7 @@ namespace MovieDatabase.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var movie = DbContext.Movies.FirstOrDefault(p => p.Id == id && p.UserId == userId);
+            var movie = MoviesHelper.GetMovieById(id.Value, userId);
 
             if (movie != null)
             {
@@ -194,9 +195,7 @@ namespace MovieDatabase.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var movie = DbContext.Movies.FirstOrDefault(p =>
-            p.Id == id.Value &&
-            p.UserId == userId);
+            var movie = MoviesHelper.GetMovieById(id.Value, userId);
 
             if (movie == null)
                 return RedirectToAction(nameof(MovieController.Index));
@@ -222,9 +221,7 @@ namespace MovieDatabase.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var movie = DbContext.Movies.FirstOrDefault(p =>
-            p.Name == name &&
-            p.UserId == userId);
+            var movie = MoviesHelper.GetMovieByName(name, userId);
 
             if (movie == null)
             {
@@ -256,5 +253,7 @@ namespace MovieDatabase.Controllers
 
             ViewBag.Categories = categories;
         }
+
+      
     }
 }
