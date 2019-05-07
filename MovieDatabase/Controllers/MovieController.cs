@@ -103,6 +103,8 @@ namespace MovieDatabase.Controllers
                 {
                     return RedirectToAction(nameof(MovieController.Index));
                 }
+
+                movie.DateUpdated = DateTime.Now;
             }
 
             movie.Name = formData.MovieName;
@@ -124,6 +126,35 @@ namespace MovieDatabase.Controllers
                 formData.Media.SaveAs(fullPathWithName);
 
                 movie.MediaUrl = Constants.UploadFolder + fileName;
+            }
+
+            if (id.HasValue)
+            {
+                var originalValues = DbContext.Entry(movie).OriginalValues;
+                var currentValues = DbContext.Entry(movie).CurrentValues;
+
+                foreach (var property in originalValues.PropertyNames)
+                {
+                    if (property == nameof(Movie.DateUpdated))
+                    {
+                        continue;
+                    }
+
+                    var originalValue = originalValues[property]?.ToString();
+                    var currentValue = currentValues[property]?.ToString();
+
+                    if (originalValue != currentValue)
+                    {
+                        var history = new MovieHistory();
+                        history.OldValue = originalValue;
+                        history.NewValue = currentValue;
+                        history.DateCreated = DateTime.Now;
+                        history.Property = property;
+                        history.MovieId = id.Value;
+                        
+                        DbContext.MovieHistories.Add(history);
+                    }
+                }
             }
 
             DbContext.SaveChanges();
@@ -253,7 +284,5 @@ namespace MovieDatabase.Controllers
 
             ViewBag.Categories = categories;
         }
-
-      
     }
 }

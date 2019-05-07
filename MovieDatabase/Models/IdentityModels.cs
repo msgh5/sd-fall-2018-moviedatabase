@@ -34,6 +34,7 @@ namespace MovieDatabase.Models
         {
         }
 
+        public DbSet<MovieHistory> MovieHistories { get; set; }
         public DbSet<Movie> Movies { get; set; }
 
         public static ApplicationDbContext Create()

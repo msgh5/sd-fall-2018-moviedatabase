@@ -17,5 +17,8 @@ namespace MovieDatabase.Models.Domain
         public string Category { get; set; }
         public string Description { get; set; }
         public string MediaUrl { get; set; }
+        public DateTime? DateUpdated { get; set; }
+
+        public List<MovieHistory> Histories { get; set; }
     }
 }
